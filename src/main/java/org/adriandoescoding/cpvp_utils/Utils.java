@@ -4,7 +4,7 @@ import org.adriandoescoding.cpvp_utils.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -13,20 +13,19 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class Utils {
-  public static boolean highlight(@NotNull GuiGraphics ctx, int sx, int sy, Identifier item) {
+  public static void highlight(@NotNull GuiGraphicsExtractor ctx, int sx, int sy, Identifier item) {
     if (!Config.getInstance().highlightConfig.isEnabled()) {
-      return false;
+      return;
     }
     Config instance = Config.getInstance();
     if (instance.highlightConfig.isAvailable(item)) {
-      return false;
+      return;
     }
     Color color = instance.highlightConfig.get(item);
     highlight(ctx, sx, sy, color);
-    return true;
   }
 
-  public static void highlight(@NotNull GuiGraphics ctx, int sx, int sy, Color color) {
+  public static void highlight(@NotNull GuiGraphicsExtractor ctx, int sx, int sy, Color color) {
     ctx.fill(
       sx,
       sy,
@@ -36,7 +35,7 @@ public class Utils {
     );
   }
 
-  public static void drawNoTotemIndicator(@NotNull GuiGraphics ctx, @NotNull HumanoidArm arm) {
+  public static void drawNoTotemIndicator(@NotNull GuiGraphicsExtractor ctx, @NotNull HumanoidArm arm) {
     int center = ctx.guiWidth() / 2;
     boolean isLeft = arm == HumanoidArm.LEFT;
 
@@ -46,7 +45,7 @@ public class Utils {
     Utils.drawNoTotemIndicator(ctx, x, y);
   }
 
-  public static void drawNoTotemIndicator(@NotNull GuiGraphics ctx, int x, int y) {
+  public static void drawNoTotemIndicator(@NotNull GuiGraphicsExtractor ctx, int x, int y) {
     if (!Config.getInstance().noTotemConfig.isEnabled())
       return;
     ctx.blitSprite(

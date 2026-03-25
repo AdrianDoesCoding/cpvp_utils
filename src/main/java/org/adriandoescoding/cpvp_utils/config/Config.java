@@ -2,8 +2,6 @@ package org.adriandoescoding.cpvp_utils.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.resources.Identifier;
 import org.adriandoescoding.cpvp_utils.config.GsonTypeAdapters.ColorTypeAdapter;
 import org.adriandoescoding.cpvp_utils.config.GsonTypeAdapters.IdentifierTypeAdapter;
@@ -18,11 +16,11 @@ import static org.adriandoescoding.cpvp_utils.Constants.CONFIG_DIR;
 import static org.adriandoescoding.cpvp_utils.Constants.CONFIG_FILE;
 
 public class Config {
+
   private static final Gson gson = new GsonBuilder()
-    .registerTypeAdapter(Color.class, new ColorTypeAdapter())
-    .registerTypeAdapter(Identifier.class, new IdentifierTypeAdapter())
-    .create()
-    ;
+      .registerTypeAdapter(Color.class, new ColorTypeAdapter())
+      .registerTypeAdapter(Identifier.class, new IdentifierTypeAdapter())
+      .create();
   private static final Config instance = Config.load();
 
 
@@ -44,7 +42,8 @@ public class Config {
       String json = Files.readString(CONFIG_FILE.toPath(), StandardCharsets.UTF_8);
       return load(json);
     } catch (IOException e) {
-      throw new RuntimeException("Unable to load config from file: %s".formatted(CONFIG_FILE.getAbsolutePath()), e);
+      throw new RuntimeException(
+          "Unable to load config from file: %s".formatted(CONFIG_FILE.getAbsolutePath()), e);
     }
   }
 
@@ -64,7 +63,8 @@ public class Config {
       out.println(json);
       out.close();
     } catch (Exception e) {
-      throw new RuntimeException("Unable to save config to file: %s".formatted(CONFIG_FILE.getAbsolutePath()), e);
+      throw new RuntimeException(
+          "Unable to save config to file: %s".formatted(CONFIG_FILE.getAbsolutePath()), e);
     }
   }
 

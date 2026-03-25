@@ -1,6 +1,6 @@
 package org.adriandoescoding.cpvp_utils.mixin;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.Slot;
@@ -18,13 +18,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HandledScreenMixin {
 
   @Inject(
-    method = "renderSlot",
-    at = @At("HEAD")
+      method = "extractSlot",
+      at = @At("HEAD")
   )
-  private void Highlight(GuiGraphics ctx, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
+  private void Highlight(GuiGraphicsExtractor ctx, Slot slot, int mouseX, int mouseY,
+      CallbackInfo ci) {
     if (Utils.SlotIsOffhand(slot) && (!slot.hasItem() || !slot
-      .getItem()
-      .is(Items.TOTEM_OF_UNDYING))) {
+        .getItem()
+        .is(Items.TOTEM_OF_UNDYING))) {
 
       Utils.drawNoTotemIndicator(ctx, slot.x, slot.y);
     }
@@ -34,7 +35,7 @@ public abstract class HandledScreenMixin {
 
   }
 
-  @Redirect(method = "renderSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;getNoItemIcon()Lnet/minecraft/resources/Identifier;"))
+  @Redirect(method = "extractSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;getNoItemIcon()Lnet/minecraft/resources/Identifier;"))
   private @Nullable Identifier getBackgroundSprite(Slot slot) {
     if (Config.getInstance().noTotemConfig.isEnabled() && Utils.SlotIsOffhand(slot)) {
       return null;

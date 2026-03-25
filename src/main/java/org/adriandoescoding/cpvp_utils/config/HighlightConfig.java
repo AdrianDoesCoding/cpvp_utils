@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public class HighlightConfig extends ToggleableOption {
+
   Map<Identifier, Color> highlightedItemMap = new HashMap<>();
 
   @Override
@@ -21,24 +22,33 @@ public class HighlightConfig extends ToggleableOption {
   public HighlightConfig(boolean enabled) {
     super(enabled);
   }
+
   public void set(Identifier item, Color color) {
-      highlightedItemMap.put(item, color);
+    highlightedItemMap.put(item, color);
     Config.saveInstance();
   }
+
   public boolean isAvailable(Identifier item) {
     return !highlightedItemMap.containsKey(item);
   }
+
   public Color get(Identifier item) {
     return highlightedItemMap.get(item);
   }
+
   public Set<Map.Entry<Identifier, Color>> getEntries() {
     return highlightedItemMap.entrySet();
   }
+
   public @NotNull Set<String> getKeys() {
-    return highlightedItemMap.keySet().stream().map(Identifier::toString).collect(Collectors.toSet());
+    return highlightedItemMap.keySet().stream().map(Identifier::toString)
+        .collect(Collectors.toSet());
   }
+
   public boolean remove(Identifier item) {
-    if (!highlightedItemMap.containsKey(item)) return false;
+    if (!highlightedItemMap.containsKey(item)) {
+      return false;
+    }
 
     highlightedItemMap.remove(item);
     Config.saveInstance();

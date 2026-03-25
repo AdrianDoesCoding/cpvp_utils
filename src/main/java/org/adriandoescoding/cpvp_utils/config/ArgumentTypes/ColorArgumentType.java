@@ -15,7 +15,8 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
-public class HexColorArgumentType implements ArgumentType<Integer> {
+public class ColorArgumentType implements ArgumentType<Integer> {
+
   public static final Map<String, Color> ColorMap = new HashMap<>() {{
     put("black", new Color(0x000000));
     put("silver", new Color(0xc0c0c0));
@@ -169,14 +170,14 @@ public class HexColorArgumentType implements ArgumentType<Integer> {
 
 
   public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType(
-    x -> Component.translatableEscape("cpvp.options.color.invalid", x)
+      x -> Component.translatableEscape("cpvp.options.color.invalid", x)
   );
 
-  private HexColorArgumentType() {
+  private ColorArgumentType() {
   }
 
-  public static HexColorArgumentType hexColor() {
-    return new HexColorArgumentType();
+  public static ColorArgumentType hexColor() {
+    return new ColorArgumentType();
   }
 
 
@@ -187,11 +188,13 @@ public class HexColorArgumentType implements ArgumentType<Integer> {
       int length = hex.length();
       if (length == 3) {
         return ARGB.color(
-          expand(Integer.parseInt(hex, 0, 1, 16)), expand(Integer.parseInt(hex, 1, 2, 16)), expand(Integer.parseInt(hex, 2, 3, 16))
+            expand(Integer.parseInt(hex, 0, 1, 16)), expand(Integer.parseInt(hex, 1, 2, 16)),
+            expand(Integer.parseInt(hex, 2, 3, 16))
         );
       }
       if (length == 6) {
-        return ARGB.color(Integer.parseInt(hex, 0, 2, 16), Integer.parseInt(hex, 2, 4, 16), Integer.parseInt(hex, 4, 6, 16));
+        return ARGB.color(Integer.parseInt(hex, 0, 2, 16), Integer.parseInt(hex, 2, 4, 16),
+            Integer.parseInt(hex, 4, 6, 16));
       }
 
     }
@@ -207,15 +210,17 @@ public class HexColorArgumentType implements ArgumentType<Integer> {
   }
 
   @Override
-  public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+  public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context,
+      SuggestionsBuilder builder) {
     String typed = builder.getRemainingLowerCase();
     if (typed.startsWith("x")) {
       if (typed.length() < 7) {
-        for (String character : new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}) {
+        for (String character : new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A",
+            "B", "C", "D", "E", "F"}) {
           builder.suggest("x%s%s".formatted(
-            typed
-              .substring(1)
-              .toUpperCase(), character
+              typed
+                  .substring(1)
+                  .toUpperCase(), character
           ));
         }
       }

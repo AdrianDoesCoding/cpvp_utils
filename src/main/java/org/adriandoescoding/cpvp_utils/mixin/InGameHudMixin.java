@@ -2,7 +2,7 @@ package org.adriandoescoding.cpvp_utils.mixin;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +10,6 @@ import net.minecraft.world.item.Items;
 import org.adriandoescoding.cpvp_utils.Utils;
 import org.adriandoescoding.cpvp_utils.config.Config;
 import org.jspecify.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,7 +27,7 @@ public abstract class InGameHudMixin {
   protected abstract Player getCameraPlayer();
 
 
-  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"), method = "renderItemHotbar")
+  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"), method = "extractItemHotbar")
   private boolean renderHotbar(ItemStack instance) {
     if (!Config.getInstance().alwaysShowOffhandSlot.isEnabled()) {
       return instance.isEmpty();
@@ -36,8 +35,8 @@ public abstract class InGameHudMixin {
     return false;
   }
 
-  @Inject(at = @At("HEAD"), method = "renderSlot")
-  private void highlight(GuiGraphics ctx, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int id, CallbackInfo ci) {
+  @Inject(at = @At("HEAD"), method = "extractSlot")
+  private void highlight(GuiGraphicsExtractor ctx, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int id, CallbackInfo ci) {
     // id maps to: 1 - 9 for hotbar and 10 for offhand
     if (id == 10 && !stack.is(Items.TOTEM_OF_UNDYING)) {
       HumanoidArm arm = getOffhandArm(player);

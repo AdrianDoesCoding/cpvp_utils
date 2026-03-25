@@ -10,6 +10,7 @@ import java.io.IOException;
 import net.minecraft.resources.Identifier;
 
 public final class IdentifierTypeAdapter extends TypeAdapter<Identifier> {
+
   @Override
   public void write(JsonWriter out, @NotNull Identifier value) throws IOException {
     out.value(value.toString());

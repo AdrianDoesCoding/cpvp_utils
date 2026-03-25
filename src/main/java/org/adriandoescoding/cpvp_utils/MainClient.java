@@ -4,7 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.commands.CommandBuildContext;
@@ -12,7 +12,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import org.adriandoescoding.cpvp_utils.config.ArgumentTypes.HexColorArgumentType;
+import org.adriandoescoding.cpvp_utils.config.ArgumentTypes.ColorArgumentType;
 import org.adriandoescoding.cpvp_utils.config.Config;
 import org.adriandoescoding.cpvp_utils.config.HighlightedItem;
 
@@ -46,9 +46,9 @@ public class MainClient implements ClientModInitializer {
             }))
           .then(LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("set")
-            .then(ClientCommandManager
+            .then(ClientCommands
               .argument("item", IdentifierArgument.id())
-              .suggests((ctx, builder) ->
+              .suggests((_, builder) ->
                 SharedSuggestionProvider.suggest(
                   BuiltInRegistries.ITEM
                     .keySet()
@@ -56,8 +56,8 @@ public class MainClient implements ClientModInitializer {
                     .map(Identifier::toString),
                   builder
                 ))
-              .then(ClientCommandManager
-                .argument("color", HexColorArgumentType.hexColor())
+              .then(ClientCommands
+                .argument("color", ColorArgumentType.hexColor())
                 .executes(ctx -> {
                   Identifier item = ctx.getArgument("item", Identifier.class);
                   Color color = new Color(ctx.getArgument("color", Integer.class));
@@ -67,9 +67,9 @@ public class MainClient implements ClientModInitializer {
                 }))))
           .then(LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("remove")
-            .then(ClientCommandManager
+            .then(ClientCommands
               .argument("item", IdentifierArgument.id())
-              .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+              .suggests((_, builder) -> SharedSuggestionProvider.suggest(
                 Config.getInstance().highlightConfig.getKeys(), builder
               ))
               .executes(ctx -> {
@@ -94,7 +94,7 @@ public class MainClient implements ClientModInitializer {
             }))
           .then(LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("get")
-            .then(ClientCommandManager
+            .then(ClientCommands
               .argument("item", IdentifierArgument.id())
               .executes(x -> {
                 Identifier item = x.getArgument("item", Identifier.class);
