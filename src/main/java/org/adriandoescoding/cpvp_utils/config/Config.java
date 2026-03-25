@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import org.adriandoescoding.cpvp_utils.config.GsonTypeAdapters.ColorTypeAdapter;
 import org.adriandoescoding.cpvp_utils.config.GsonTypeAdapters.IdentifierTypeAdapter;
 

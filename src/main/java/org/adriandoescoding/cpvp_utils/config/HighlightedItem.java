@@ -1,9 +1,8 @@
 package org.adriandoescoding.cpvp_utils.config;
 
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.awt.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class HighlightedItem {
   Color color;
@@ -37,7 +36,7 @@ public class HighlightedItem {
     String hex = String.format("#%02x%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     return "%s: %s".formatted(item.toString(), hex);
   }
-  public Text toText() {
-    return Text.literal(this.toString());
+  public Component toText() {
+    return Component.literal(this.toString());
   }
 }

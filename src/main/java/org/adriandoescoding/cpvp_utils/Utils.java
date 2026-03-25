@@ -1,24 +1,24 @@
 package org.adriandoescoding.cpvp_utils;
 
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Identifier;
 import org.adriandoescoding.cpvp_utils.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class Utils {
-  public static boolean highlight(@NotNull DrawContext ctx, int sx, int sy, Identifier item) {
+  public static boolean highlight(@NotNull GuiGraphics ctx, int sx, int sy, Identifier item) {
     if (!Config.getInstance().highlightConfig.isEnabled()) {
       return false;
     }
     Config instance = Config.getInstance();
-    if (!instance.highlightConfig.has(item)) {
+    if (instance.highlightConfig.isAvailable(item)) {
       return false;
     }
     Color color = instance.highlightConfig.get(item);
@@ -26,7 +26,7 @@ public class Utils {
     return true;
   }
 
-  public static void highlight(@NotNull DrawContext ctx, int sx, int sy, Color color) {
+  public static void highlight(@NotNull GuiGraphics ctx, int sx, int sy, Color color) {
     ctx.fill(
       sx,
       sy,
@@ -36,20 +36,20 @@ public class Utils {
     );
   }
 
-  public static void drawNoTotemIndicator(@NotNull DrawContext ctx, @NotNull Arm arm) {
-    int center = ctx.getScaledWindowWidth() / 2;
-    boolean isLeft = arm == Arm.LEFT;
+  public static void drawNoTotemIndicator(@NotNull GuiGraphics ctx, @NotNull HumanoidArm arm) {
+    int center = ctx.guiWidth() / 2;
+    boolean isLeft = arm == HumanoidArm.LEFT;
 
     int x = isLeft ? center - 91 - 26 : center + 91 + 10;
-    int y = ctx.getScaledWindowHeight() - 16 - 3;
+    int y = ctx.guiHeight() - 16 - 3;
 
     Utils.drawNoTotemIndicator(ctx, x, y);
   }
 
-  public static void drawNoTotemIndicator(@NotNull DrawContext ctx, int x, int y) {
+  public static void drawNoTotemIndicator(@NotNull GuiGraphics ctx, int x, int y) {
     if (!Config.getInstance().noTotemConfig.isEnabled())
       return;
-    ctx.drawGuiTexture(
+    ctx.blitSprite(
       RenderPipelines.GUI_TEXTURED,
       Constants.NO_TOTEM_ICON,
       16,
@@ -66,10 +66,10 @@ public class Utils {
   public static boolean SlotIsOffhand(Slot slot) {
     if (slot == null)
       return false;
-    Identifier sprite = slot.getBackgroundSprite();
+    Identifier sprite = slot.getNoItemIcon();
     if (sprite == null)
       return false;
-    return sprite.equals(Identifier.of(
+    return sprite.equals(Identifier.fromNamespaceAndPath(
       Identifier.DEFAULT_NAMESPACE,
       "container/slot/shield"
     ));
@@ -78,7 +78,7 @@ public class Utils {
   public static Identifier getItemId(ItemStack stack) {
     if (stack.isEmpty())
       return null;
-    return Registries.ITEM.getId(stack.getItem());
+    return BuiltInRegistries.ITEM.getKey(stack.getItem());
   }
 
 }

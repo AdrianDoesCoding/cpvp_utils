@@ -4,10 +4,10 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import net.minecraft.resources.Identifier;
 
 public final class IdentifierTypeAdapter extends TypeAdapter<Identifier> {
   @Override
@@ -26,7 +26,7 @@ public final class IdentifierTypeAdapter extends TypeAdapter<Identifier> {
     }
     String s = in.nextString();
     try {
-      return Identifier.of(s);
+      return Identifier.parse(s);
     } catch (RuntimeException ex) {
       throw new IOException("Invalid Identifier: \"" + s + "\"", ex);
     }

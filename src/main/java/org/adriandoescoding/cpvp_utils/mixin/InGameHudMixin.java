@@ -1,14 +1,12 @@
 package org.adriandoescoding.cpvp_utils.mixin;
 
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.adriandoescoding.cpvp_utils.Utils;
 import org.adriandoescoding.cpvp_utils.config.Config;
 import org.jspecify.annotations.Nullable;
@@ -21,16 +19,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public abstract class InGameHudMixin {
 
 
   @Shadow
   @Nullable
-  protected abstract PlayerEntity getCameraPlayer();
+  protected abstract Player getCameraPlayer();
 
 
-  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z"), method = "renderHotbar")
+  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"), method = "renderItemHotbar")
   private boolean renderHotbar(ItemStack instance) {
     if (!Config.getInstance().alwaysShowOffhandSlot.isEnabled()) {
       return instance.isEmpty();
@@ -38,11 +36,11 @@ public abstract class InGameHudMixin {
     return false;
   }
 
-  @Inject(at = @At("HEAD"), method = "renderHotbarItem")
-  private void highlight(DrawContext ctx, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int id, CallbackInfo ci) {
+  @Inject(at = @At("HEAD"), method = "renderSlot")
+  private void highlight(GuiGraphics ctx, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int id, CallbackInfo ci) {
     // id maps to: 1 - 9 for hotbar and 10 for offhand
-    if (id == 10 && !stack.isOf(Items.TOTEM_OF_UNDYING)) {
-      Arm arm = getOffhandArm(player);
+    if (id == 10 && !stack.is(Items.TOTEM_OF_UNDYING)) {
+      HumanoidArm arm = getOffhandArm(player);
       Utils.drawNoTotemIndicator(ctx, arm);
     } else {
       Utils.highlight(ctx, x, y, Utils.getItemId(stack));
@@ -53,14 +51,14 @@ public abstract class InGameHudMixin {
 
   @Unique
   @Nullable
-  private Arm getOffhandArm() {
-    PlayerEntity playerEntity = this.getCameraPlayer();
+  private HumanoidArm getOffhandArm() {
+    Player playerEntity = this.getCameraPlayer();
     if (playerEntity == null) return null;
     return this.getOffhandArm(playerEntity);
   }
 
   @Unique
-  private Arm getOffhandArm(PlayerEntity playerEntity) {
+  private HumanoidArm getOffhandArm(Player playerEntity) {
     return playerEntity.getMainArm().getOpposite();
   }
 

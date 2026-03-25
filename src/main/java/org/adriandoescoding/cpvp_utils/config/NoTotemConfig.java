@@ -1,12 +1,12 @@
 package org.adriandoescoding.cpvp_utils.config;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class NoTotemConfig extends ToggleableOption {
 
   @Override
-  public Text getName() {
-    return Text.translatable("cpvp.options.no_totem_icon.name");
+  public Component getName() {
+    return Component.translatable("cpvp.options.no_totem_icon.name");
   }
 
   public NoTotemConfig(boolean enabled) {

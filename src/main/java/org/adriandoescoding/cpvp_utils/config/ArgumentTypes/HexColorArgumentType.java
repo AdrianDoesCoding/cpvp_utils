@@ -10,13 +10,10 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 
 public class HexColorArgumentType implements ArgumentType<Integer> {
   public static final Map<String, Color> ColorMap = new HashMap<>() {{
@@ -172,7 +169,7 @@ public class HexColorArgumentType implements ArgumentType<Integer> {
 
 
   public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType(
-    x -> Text.stringifiedTranslatable("cpvp.options.color.invalid", x)
+    x -> Component.translatableEscape("cpvp.options.color.invalid", x)
   );
 
   private HexColorArgumentType() {
@@ -189,18 +186,18 @@ public class HexColorArgumentType implements ArgumentType<Integer> {
       String hex = string.substring(1);
       int length = hex.length();
       if (length == 3) {
-        return ColorHelper.getArgb(
+        return ARGB.color(
           expand(Integer.parseInt(hex, 0, 1, 16)), expand(Integer.parseInt(hex, 1, 2, 16)), expand(Integer.parseInt(hex, 2, 3, 16))
         );
       }
       if (length == 6) {
-        return ColorHelper.getArgb(Integer.parseInt(hex, 0, 2, 16), Integer.parseInt(hex, 2, 4, 16), Integer.parseInt(hex, 4, 6, 16));
+        return ARGB.color(Integer.parseInt(hex, 0, 2, 16), Integer.parseInt(hex, 2, 4, 16), Integer.parseInt(hex, 4, 6, 16));
       }
 
     }
     if (ColorMap.containsKey(string)) {
       Color color = ColorMap.get(string);
-      return ColorHelper.getArgb(color.getRed(), color.getGreen(), color.getBlue());
+      return ARGB.color(color.getRed(), color.getGreen(), color.getBlue());
     }
     throw INVALID_COLOR_EXCEPTION.create(string);
   }
@@ -225,7 +222,7 @@ public class HexColorArgumentType implements ArgumentType<Integer> {
     } else {
       builder.suggest("x");
     }
-    CommandSource.suggestMatching(ColorMap.keySet(), builder);
+    SharedSuggestionProvider.suggest(ColorMap.keySet(), builder);
     return builder.buildFuture();
   }
 }

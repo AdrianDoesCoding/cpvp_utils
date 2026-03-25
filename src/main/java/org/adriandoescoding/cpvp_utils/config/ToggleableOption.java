@@ -2,18 +2,17 @@ package org.adriandoescoding.cpvp_utils.config;
 
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
 public abstract class ToggleableOption {
   private boolean enabled;
-  private transient Text name = null;
+  private transient Component name = null;
 
-  public abstract Text getName();
+  public abstract Component getName();
 
   public ToggleableOption(boolean enabled) {
     this.enabled = enabled;
@@ -44,21 +43,21 @@ public abstract class ToggleableOption {
     if (name == null) {
       this.name = this.getName();
     }
-    Text msg;
+    Component msg;
     if (this.isEnabled()) {
-      msg = Text
+      msg = Component
         .translatable("cpvp.options.commons.enabled", name)
-        .formatted(Formatting.GREEN);
+        .withStyle(ChatFormatting.GREEN);
     } else {
-      msg = Text
+      msg = Component
         .translatable("cpvp.options.commons.disabled", name)
-        .formatted(Formatting.RED);
+        .withStyle(ChatFormatting.RED);
     }
     sendState(msg, context);
 
   }
 
-  private void sendState(@NotNull Text msg, @Nullable CommandContext<FabricClientCommandSource> context) {
+  private void sendState(@NotNull Component msg, @Nullable CommandContext<FabricClientCommandSource> context) {
     if (context != null) {
       context.getSource().sendFeedback(msg);
     }

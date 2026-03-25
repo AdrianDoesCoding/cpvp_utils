@@ -4,16 +4,14 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.network.ClientCommandSource;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import org.adriandoescoding.cpvp_utils.config.ArgumentTypes.HexColorArgumentType;
 import org.adriandoescoding.cpvp_utils.config.Config;
 import org.adriandoescoding.cpvp_utils.config.HighlightedItem;
@@ -22,7 +20,7 @@ import java.awt.*;
 import java.util.Map;
 
 public class MainClient implements ClientModInitializer {
-  private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess dedicated) {
+  private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext dedicated) {
     dispatcher.register(
       LiteralArgumentBuilder
         .<FabricClientCommandSource>literal("cpvp_utils")
@@ -49,11 +47,11 @@ public class MainClient implements ClientModInitializer {
           .then(LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("set")
             .then(ClientCommandManager
-              .argument("item", IdentifierArgumentType.identifier())
+              .argument("item", IdentifierArgument.id())
               .suggests((ctx, builder) ->
-                CommandSource.suggestMatching(
-                  Registries.ITEM
-                    .getIds()
+                SharedSuggestionProvider.suggest(
+                  BuiltInRegistries.ITEM
+                    .keySet()
                     .stream()
                     .map(Identifier::toString),
                   builder
@@ -70,8 +68,8 @@ public class MainClient implements ClientModInitializer {
           .then(LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("remove")
             .then(ClientCommandManager
-              .argument("item", IdentifierArgumentType.identifier())
-              .suggests((ctx, builder) -> CommandSource.suggestMatching(
+              .argument("item", IdentifierArgument.id())
+              .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
                 Config.getInstance().highlightConfig.getKeys(), builder
               ))
               .executes(ctx -> {
@@ -97,10 +95,10 @@ public class MainClient implements ClientModInitializer {
           .then(LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("get")
             .then(ClientCommandManager
-              .argument("item", IdentifierArgumentType.identifier())
+              .argument("item", IdentifierArgument.id())
               .executes(x -> {
                 Identifier item = x.getArgument("item", Identifier.class);
-                if (!Config.getInstance().highlightConfig.has(item)) {
+                if (Config.getInstance().highlightConfig.isAvailable(item)) {
                   throw new IllegalArgumentException("No such item found.");
                 }
                 HighlightedItem highlightedItem = HighlightedItem.of(item, Config.getInstance().highlightConfig.get(item));

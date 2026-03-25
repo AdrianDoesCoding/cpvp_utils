@@ -1,10 +1,10 @@
 package org.adriandoescoding.cpvp_utils.mixin;
 
-import net.minecraft.item.Items;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Items;
 import org.adriandoescoding.cpvp_utils.Utils;
 import org.adriandoescoding.cpvp_utils.config.Config;
 import org.jetbrains.annotations.Nullable;
@@ -14,31 +14,31 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({HandledScreen.class})
+@Mixin({AbstractContainerScreen.class})
 public abstract class HandledScreenMixin {
 
   @Inject(
-    method = "drawSlot",
+    method = "renderSlot",
     at = @At("HEAD")
   )
-  private void Highlight(DrawContext ctx, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
-    if (Utils.SlotIsOffhand(slot) && (!slot.hasStack() || !slot
-      .getStack()
-      .isOf(Items.TOTEM_OF_UNDYING))) {
+  private void Highlight(GuiGraphics ctx, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
+    if (Utils.SlotIsOffhand(slot) && (!slot.hasItem() || !slot
+      .getItem()
+      .is(Items.TOTEM_OF_UNDYING))) {
 
       Utils.drawNoTotemIndicator(ctx, slot.x, slot.y);
     }
-    if (slot.hasStack()) {
-      Utils.highlight(ctx, slot.x, slot.y, Utils.getItemId(slot.getStack()));
+    if (slot.hasItem()) {
+      Utils.highlight(ctx, slot.x, slot.y, Utils.getItemId(slot.getItem()));
     }
 
   }
 
-  @Redirect(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/slot/Slot;getBackgroundSprite()Lnet/minecraft/util/Identifier;"))
+  @Redirect(method = "renderSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;getNoItemIcon()Lnet/minecraft/resources/Identifier;"))
   private @Nullable Identifier getBackgroundSprite(Slot slot) {
     if (Config.getInstance().noTotemConfig.isEnabled() && Utils.SlotIsOffhand(slot)) {
       return null;
     }
-    return slot.getBackgroundSprite();
+    return slot.getNoItemIcon();
   }
 }
