@@ -1,0 +1,17 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "org.adriandoescoding.cpvp_utils.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "HandledScreenMixin",
+        "InGameHudMixin"
+    ],
+
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "requireAnnotations": true
+    }
+}

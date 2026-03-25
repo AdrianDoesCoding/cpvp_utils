@@ -1,0 +1,8 @@
+{
+    "cpvp.options.highlighter.name": "Highlighter",
+    "cpvp.options.always_show_offhand_slot.name": "Always show offhand slot",
+    "cpvp.options.no_totem_icon.name": "No Totem Icon",
+    "cpvp.options.commons.enabled": "\"%s\" is now enabled!",
+    "cpvp.options.commons.disabled": "\"%s\" is now disabled!",
+    "cpvp.options.color.invalid": "%s is not a valid color!"
+}

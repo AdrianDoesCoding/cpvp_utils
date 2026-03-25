@@ -1,0 +1,26 @@
+{
+    "schemaVersion": 1,
+    "id": "cpvp_utils",
+    "version": "${version}",
+    "name": "Crystal PVP Utilities",
+    "description": "",
+    "authors": [],
+    "contact": {},
+    "license": "MIT",
+    "icon": "assets/cpvp_utils/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "org.adriandoescoding.cpvp_utils.MainClient"
+        ]
+    },
+    "mixins": [
+        "cpvp_utils.client.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "fabric-api": "*",
+        "minecraft": "${minecraft_version}"
+    }
+
+}
